@@ -1,0 +1,63 @@
+  /* Estilo personalizado para la imagen de fondo */
+  .bg-image {
+    background-image: url('https://w0.peakpx.com/wallpaper/76/217/HD-wallpaper-nature1127-desert-nature-night-sky.jpg');
+    background-size: cover;
+    background-position: center;
+    height: 100vh; /* Altura del viewport */
+    /* Filtro de opacidad */
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .bg-image::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0); /* Ajusta el valor alfa para controlar la oscuridad */
+    pointer-events: none;
+  }
+
+  .text-orange {
+    color: #e28125;
+  }
+
+  /* Estilo para botón con fondo "orange" */
+  .btn-orange {
+    color: #fff;
+    background-color: #e28125;
+    border-color: #e28125;
+  }
+
+  /* Estilo para botón con fondo "orange" al hacer hover */
+  .btn-orange:hover {
+    color: #fff;
+    background-color: #d96e1c;
+    border-color: #d96e1c;
+  }
+
+  .navbar-orange {
+    background-color: #e28125;
+  }
+
+  .navbar-orange .navbar-nav .nav-link {
+    color: #fff;
+  }
+
+  .navbar-orange .navbar-nav .nav-link:hover {
+    color: #f0e6e6;
+  }
+  a.navbar-brand, .navbar-brand:focus, .navbar-brand:hover {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  .container, .container-fluid, .container-lg, .container-md, .container-sm, .container-xl {
+    width: 100%;
+    padding-right: 0px;
+    padding-left: 0px; 
+    margin-right: auto;
+    margin-left: auto;
+}
