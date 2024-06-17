@@ -10,9 +10,37 @@
     <link rel="stylesheet" href="{!! asset('css/styles.css') !!}">
     <title>Hello, world!</title>
   </head>
+  <style>
+     body {
+      background-color: white; /* Fondo blanco predeterminado */
+    }
+    #mensaje-celular {
+      display: none; /* Ocultar el mensaje inicialmente */
+      text-align: center;
+      margin-top: 20px;
+      font-size: 18px;
+      font-weight: bold;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background-color: #007bff;
+      color: white;
+      padding: 10px 0;
+      z-index: 1000; /* Asegura que esté por encima de otros elementos */
+    }
+    @media (max-width: 767px) {
+      body {
+        background-color: #f0f0f0; /* Cambiar fondo a gris claro en dispositivos móviles */
+      }
+    }
+  </style>
   <body>
-
+  <div id="mensaje-celular" class="alert alert-info">
+    Esta aplicación es visible solo mediante celular.
+  </div>
   <div class="container-fluid p-0 bg-image">
+
   <div class="row justify-content-center align-items-end h-100">
     <div class="col-10 text-center text-white">
       <h1 class="display-4">Namaiwajana</h1>
@@ -33,5 +61,16 @@
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js" integrity="sha384-9/reFTGAW83EW2RDu2S0VKaIzap3H66lZH81PoYlFhbGU+6BZp6G7niu735Sk7lN" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.min.js" integrity="sha384-+sLIOodYLS7CIrQpBjl+C7nPvqq+FbNUBDunl/OZv93DB7Ln/533i8e/mZXLi/P+" crossorigin="anonymous"></script>
     -->
+    <script>
+  $(document).ready(function() {
+    // Verificar si se está visualizando desde un celular
+    if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+      // Mostrar el mensaje para dispositivos móviles
+      
+    }else{
+      $('#mensaje-celular').show();
+    }
+  });
+</script>
   </body>
 </html>

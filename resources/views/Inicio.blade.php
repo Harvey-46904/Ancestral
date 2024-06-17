@@ -49,9 +49,30 @@
       stroke-width: 2px;
     }
   </style>
+
+<style>
+    body {
+      background-color: white; /* Fondo blanco predeterminado */
+    }
+    #mensaje-celular {
+      display: none; /* Ocultar el mensaje inicialmente */
+      text-align: center;
+      margin-top: 20px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+    @media (max-width: 767px) {
+      body {
+        background-color: #f0f0f0; /* Cambiar fondo a gris claro en dispositivos móviles */
+      }
+    }
+  </style>
     </head>
     <body>
         <div class="container-fluid">
+        <div id="mensaje-celular" class="alert alert-info">
+    Esta aplicación es visible solo mediante celular.
+  </div>
             <!-- Image and text -->
             <nav class="navbar navbar-orange bg-orange">
                 <a class="navbar-brand text-light text-uppercase">
