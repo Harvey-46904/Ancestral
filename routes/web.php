@@ -16,9 +16,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('Home');
 });
-Route::get('inicio', function () {
-    return view('Inicio');
-})->name("inicio");
+Route::get('home/{nombre_comunidad}', "ComunidadesController@index")->name("inicio");
 
 
 Route::group(['prefix' => 'admin'], function () {
