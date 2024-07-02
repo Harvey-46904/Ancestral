@@ -44,7 +44,7 @@
   <div class="row justify-content-center align-items-end h-100">
     <div class="col-10 text-center text-white">
       <h1 class="display-4">Namaiwajana</h1>
-      <p class="lead">Guardianes del tiempo, testigos silenciosos de la historia.</p>
+      <p class="lead">Conoce nuestra historia <br> Pirraja Wakaipa</p>
       <a href="{{ route('inicio', ['nombre_comunidad' => 'Pausayu']) }}" class="btn btn-orange btn-lg mb-5">Continuar</a>
     </div>
   </div>
