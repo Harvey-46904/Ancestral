@@ -57,70 +57,51 @@ class ComunidadesController extends Controller
         return response(["DAT"=>$consulta[0]->personas]);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
+    public function api_data($nombre_comunidad){
+        
+        $consulta = DB::table("linajes")
+        ->join("comunidades", "comunidades.id", "=", "linajes.comunidad_id")
+        ->leftJoin("personas", "personas.linaje_id", "=", "linajes.id")
+        ->select(
+            "comunidades.Nombre",
+            "comunidades.Descripcion",
+            "comunidades.Fotografia",
+            "linajes.descripcion",
+            "linajes.logo",
+            "linajes.id as linaje_id",
+            "linajes.nombre",
+           
+            DB::raw("GROUP_CONCAT(personas.nombre_persona SEPARATOR ', ') as personas")
+        )
+        ->where("linajes.nombre", "=", $nombre_comunidad)
+        ->groupBy("linajes.id", "linajes.nombre","comunidades.Nombre", "comunidades.Descripcion",
+        "linajes.descripcion", "comunidades.Fotografia", "linajes.logo")
+        ->get();
+    
+    // Convertimos el resultado en un array para unirlo con personas
+    $consulta = $consulta->toArray();
+    
+    // Ahora obtenemos todas las personas asociadas a cada linaje y las agregamos al array $consulta
+    foreach ($consulta as &$item) {
+        $personas = DB::table("personas")
+            ->where("linaje_id", "=", $item->linaje_id)
+            ->get();
+        
+        $item->personas = $personas->toArray();
     }
+ 
+    $arbol = $this->buildHierarchy($consulta[0]->personas);
+    $arbol = json_encode($arbol);
+    $jsonString = json_encode($arbol);
+    $consulta[0]->personas=$arbol;
+    $urlImagenlogo = asset('storage/' . $consulta[0]->logo);
+    $consulta[0]->logo=$urlImagenlogo;
+    $urlImagen = asset('storage/' . $consulta[0]->Fotografia);
+    $consulta[0]->Fotografia=$urlImagen;
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Comunidades  $comunidades
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Comunidades $comunidades)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Comunidades  $comunidades
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Comunidades $comunidades)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Comunidades  $comunidades
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Comunidades $comunidades)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Comunidades  $comunidades
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Comunidades $comunidades)
-    {
-        //
+       
+       return response($consulta);
+        return response(["DAT"=>$consulta[0]->personas]);
     }
 
 
@@ -180,4 +161,75 @@ class ComunidadesController extends Controller
     
         return $node;
     }
+
+    public function buildHierarchy($personas) {
+        // Convertir las personas de stdClass a array asociativo si es necesario
+        $personas = array_map(function ($persona) {
+            return (array) $persona;
+        }, $personas);
+    
+        // Indexar personas por su ID
+        $indexed_personas = collect($personas)->keyBy('id')->toArray();
+    
+        // Array para almacenar los nodos y enlaces
+        $nodes = [];
+        $links = [];
+    
+        // Función recursiva para construir el árbol
+        $buildTree = function ($persona) use (&$buildTree, &$indexed_personas, &$nodes, &$links) {
+            // Crear nodo para la persona
+            $node = [
+                'id' => 'node_' . $persona['id'],
+                'name' => $persona['nombre_persona'],
+                'info' => [
+                    'id' => $persona['id'],
+                    'nombre_persona' => $persona['nombre_persona'],
+                    'descripcion_persona' => $persona['descripcion_persona'],
+                    'fotografia' => asset('storage/' . str_replace('\\', '/', $persona['fotografia'])), // Ajustar la ruta de la fotografía
+                    'linaje_id' => $persona['linaje_id'],
+                    'padre_id' => $persona['padre_id'],
+                    'created_at' => $persona['created_at'],
+                    'updated_at' => $persona['updated_at'],
+                    'nacimiento' => $persona['nacimiento'],
+                    'difuncion' => $persona['difuncion'],
+                    'memoria' => $persona['memoria']
+                ]
+            ];
+    
+            // Agregar el nodo al array de nodes
+            $nodes[] = $node;
+    
+            // Buscar hijos de la persona actual
+            $hijos = array_filter($indexed_personas, function ($p) use ($persona) {
+                return $p['padre_id'] == $persona['id'];
+            });
+    
+            // Verificar si la persona tiene hijos y procesar recursivamente
+            foreach ($hijos as $hijo) {
+                // Añadir enlace al array de links
+                $link = [
+                    'source' => 'node_' . $persona['id'],
+                    'target' => 'node_' . $hijo['id']
+                ];
+                $links[] = $link;
+    
+                // Llamar recursivamente para cada hijo
+                $buildTree($hijo);
+            }
+        };
+    
+        // Construir el árbol comenzando desde las personas que no tienen padre (padre_id = 0)
+        foreach ($personas as $persona) {
+            if ($persona['padre_id'] == 0) {
+                $buildTree($persona);
+            }
+        }
+    
+        // Retornar la estructura final de nodes y links
+        return [
+            'nodes' => $nodes,
+            'links' => $links
+        ];
+    }
+    
 }
